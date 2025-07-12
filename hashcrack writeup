@@ -1,0 +1,53 @@
+ 📁 Categoria:
+Criptografia
+  
+🎯 Desafio:
+Weak Hash
+
+    A company stored a secret message on a server which got breached due to the admin using weakly hashed passwords.
+    Can you gain access to the secret stored within the server?
+    nc verbal-sleep.picoctf.net 61522
+
+🧩 Etapas da Exploração
+1. 🕵️ Análise Inicial
+
+Ao conectar via netcat ao endereço fornecido (nc verbal-sleep.picoctf.net 61522), recebemos a seguinte mensagem:
+
+Welcome!! Looking For the Secret?
+We have identified a hash: 482c811da5d5b4bc6d497ffa98491e38
+Enter the password for identified hash:
+
+Sabemos que 482c811da5d5b4bc6d497ffa98491e38 é um hash, e nossa missão é descobrir a senha original a partir dele.
+
+2. 🔓 Quebra dos Hashes
+
+Utilizamos o site CrackStation — um excelente recurso para quebrar hashes com força bruta baseada em um dicionário robusto.
+
+Ao inserir o hash 482c811da5d5b4bc6d497ffa98491e38, obtemos:
+
+    password123
+
+Reenviamos essa senha no terminal e um novo hash é fornecido. Repetimos o processo algumas vezes:
+
+📍 Etapas resumidas:
+Hash	Senha
+482c811da5d5b4bc6d497ffa98491e38	password123 
+b7a875fc1ea228b9061041b7cec4bd3c52ab3ce3 letmein 
+916e8c4f79b25028c9e467f1eb8eee6d6bbdff965f9928310ad30a8d88697745 qwerty098
+3. 🏁 Flag Final
+
+Na última etapa, ao inserir a última senha correta, o servidor retorna:
+
+Correct! You've cracked the SHA-256 hash with a secret found. 
+The flag is: picoCTF{UseStr0nG_h@shEs_&PaSswDs!_36a1cf73}
+
+🧠 Aprendizado
+
+Esse desafio reforça a importância de não utilizar senhas fracas e comuns, especialmente quando armazenadas com funções de hash fracas como MD5/SHA-1/SHA-256
+
+✅ Além disso, mostrou como ferramentas como CrackStation automatizam a identificação do tipo de hash e a quebra baseada em dicionário, facilitando muito a exploração.
+
+🛠️ Ferramentas Utilizadas
+
+    CrackStation
+    Terminal Linux (nc – netcat)
