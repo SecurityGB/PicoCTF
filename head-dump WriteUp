@@ -1,0 +1,43 @@
+📁 Categoria: Web Exploitation
+  
+🎯 Objetivo:
+
+Explorar um endpoint que expõe informações de memória da aplicação e recuperar uma flag escondida no conteúdo da heap.
+🧩 Etapas do desafio
+1. 🕵️ Análise inicial
+
+Ao acessar o desafio, a aplicação apresenta duas abas principais:
+
+    /api: uma aba comum que mostra rotas da API.
+
+    /heapdump: essa aba chama a atenção, pois serve um arquivo .heapsnapshot contendo um dump (cópia) da heap de memória da aplicação web.
+
+2. 🧠 O que é um arquivo .heapsnapshot?
+
+Um heap snapshot é uma representação do conteúdo da memória de uma aplicação no momento da captura, incluindo objetos, variáveis, strings e seus relacionamentos.
+
+Esse tipo de arquivo é normalmente utilizado por desenvolvedores para:
+
+    Analisar vazamentos de memória
+
+    Monitorar alocações excessivas
+
+    Verificar o que está em uso na memória
+
+Mas em um contexto de segurança, ele pode expor dados sensíveis que estavam em uso no momento do snapshot — incluindo tokens, senhas, e até flags.
+3. 🔍 Análise do snapshot
+
+Depois de fazer o download do arquivo .heapsnapshot, realizamos uma análise utilizando ferramentas de linha de comando.
+📦 Comando utilizado:
+
+strings nome_do_snapshot.heapsnapshot | grep -i pico
+
+    O comando strings extrai todas as sequências legíveis (ASCII) de um arquivo binário, e grep filtra o resultado procurando por palavras-chave — neste caso, "pico", que é o prefixo padrão das flags do PicoCTF.
+
+4. 🏁 Flag encontrada!
+
+A flag estava contida em texto simples dentro do arquivo de memória — o que confirma que a aplicação estava armazenando dados sensíveis na heap de forma insegura.
+
+✅ Conclusão
+
+Esse desafio mostra a importância de nunca expor dumps de memória em ambientes de produção, pois arquivos como heapdump, core, debug.log ou profile.json podem conter dados confidenciais, mesmo que pareçam inofensivos à primeira vista.
